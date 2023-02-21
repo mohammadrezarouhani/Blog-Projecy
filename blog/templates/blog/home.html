@@ -38,3 +38,13 @@
     {% endif %}
 
 {% endblock content %}
+
+
+{%block latest%}
+        {% for post in latest_posts %} 
+        <li class="list-group-item list-group-item-light"> 
+            <a href="{% url 'post-detail' post.id %}">{{post.title}}</a>
+        </li>
+         {% endfor %}
+{%endblock latest%}
+

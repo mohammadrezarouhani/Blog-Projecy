@@ -1,9 +1,6 @@
-from django.forms.forms import Form
-from django.forms.models import BaseModelForm
+import pdb
 from django.shortcuts import render,get_object_or_404
-from django.http import HttpResponse
 from .models import Post
-from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.models import User
@@ -50,9 +47,10 @@ class PostDetailView(DetailView):
 
 class PostListView(ListView):
     model=Post
-    template_name='blog\home.html'
+    template_name='blog/home.html'
     context_object_name='post'
     ordering=['-date_posted']
+    extra_context={'latest_posts': Post.objects.order_by('-date_posted')[:5]}
     paginate_by=4
 
 
@@ -68,15 +66,19 @@ class UserPostListview(ListView):
 
 
 def home(request):
-    post={
-        'post':Post.objects.all(),
+    queryset=Post.objects.all(),
+    
+    data={
+        'latest_posts':queryset.objects.earliest('date_posted')[:5],
+        'post':queryset,
         'title':'home page'
     }
-    return render(request,'blog\\home.html',post)
+    
+    return render(request,'blog/home.html',data)
 
 
 def about(request):
     post={
         'title':'about page'
     }
-    return render(request,'blog\\about.html',post)
+    return render(request,'blog/about.html',post)
